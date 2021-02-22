@@ -1,6 +1,3 @@
-import CCairo
-print("Hello Cairo ", CAIRO_VERSION_MAJOR)
+import Cairo
 
-
-
-
+example(filename: "/Users/antonioposabella/Desktop/output.png")
