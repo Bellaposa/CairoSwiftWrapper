@@ -1,15 +1,52 @@
 import CCairo
 import Foundation
 
-public func example(filename: String) {
+
+struct CairoError: Error {
+	let status: cairo_status_t
+
+	static func check(
+		_ status: cairo_status_t
+	) throws {
+		guard status == CAIRO_STATUS_SUCCESS else {
+			throw CairoError(status: status)
+		}
+	}
+}
+
+final class Surface {
+	let pointer: OpaquePointer
+	init(
+		filename: String,
+		size: CGSize,
+		format: _cairo_format = CAIRO_FORMAT_RGB24
+	) throws {
+		pointer = cairo_image_surface_create(
+			format,
+			Int32(size.width),
+			Int32(size.height)
+		)
+
+		let status = cairo_surface_status(pointer)
+		try CairoError.check(status)
+	}
+
+	deinit {
+		cairo_surface_destroy(pointer)
+	}
+}
+
+public func example(filename: String) throws {
 	
-	let pointer = cairo_image_surface_create(
-		CAIRO_FORMAT_RGB24,
-		800,
-		600
+	let surface = try Surface(
+		filename: filename,
+		size: CGSize(
+			width: 800,
+			height: 600
+		)
 	)
 
-	let context = cairo_create(pointer)!
+	let context = cairo_create(surface.pointer)!
 
 	cairo_set_source_rgba(
 		context,
@@ -22,27 +59,28 @@ public func example(filename: String) {
 		context,
 		"Sans",
 		CAIRO_FONT_SLANT_NORMAL,
-		CAIRO_FONT_WEIGHT_NORMAL);
+		CAIRO_FONT_WEIGHT_NORMAL)
 
 	cairo_set_font_size(
 		context,
-		40.0);
+		40.0
+	)
 
 	cairo_move_to(
 		context,
 		100.0,
-		100.0);
+		100.0
+	)
 
 	cairo_show_text(
 		context,
-		"Hello World from Cairo");
+		"Hello World from Cairo"
+	)
 
 	cairo_surface_write_to_png(
-		pointer,
+		surface.pointer,
 		filename //works only with absolute path?
 	)
 
 	cairo_destroy(context)
-
-	cairo_surface_destroy(pointer)
 }
