@@ -2,7 +2,7 @@ import CCairo
 import Foundation
 
 
-struct CairoError: Error {
+public struct CairoError: Error {
 	let status: cairo_status_t
 
 	static func check(
@@ -16,10 +16,10 @@ struct CairoError: Error {
 	}
 }
 
-final class Surface {
+final public class Surface {
 	let pointer: OpaquePointer
-	init(
-		filename: String,
+	
+	public init(
 		size: CGSize,
 		format: _cairo_format = CAIRO_FORMAT_RGB24
 	) throws {
@@ -49,11 +49,11 @@ final class Surface {
 	}
 }
 
-final class Context {
+final public class Context {
 	let pointer: OpaquePointer
 	let surface: Surface
 
-	init(
+	public init(
 		_ surface: Surface
 	) throws {
 		self.surface = surface
@@ -74,7 +74,7 @@ final class Context {
 		)
 	}
 
-	func setSource(
+	public func setSource(
 		color: Color
 	) {
 		cairo_set_source_rgba(
@@ -86,7 +86,7 @@ final class Context {
 		)
 	}
 
-	func createText(
+	public func createText(
 		_ text: String
 	) {
 		cairo_show_text(
@@ -95,7 +95,7 @@ final class Context {
 		)
 	}
 
-	func setFont(
+	public func setFont(
 		_ font: Font = .arial,
 		size: Double = 30.0
 	) {
@@ -112,7 +112,7 @@ final class Context {
 		)
 	}
 
-	func moveTo(
+	public func moveTo(
 		point: CGPoint
 	) {
 		cairo_move_to(
@@ -126,7 +126,7 @@ final class Context {
 		)
 	}
 
-	func saveFile(
+	public func saveFile(
 		_ filename: String
 	) {
 		cairo_surface_write_to_png(
@@ -136,56 +136,19 @@ final class Context {
 	}
 }
 
-struct Color {
+public struct Color {
 	var red: Double
 	var green: Double
 	var blue: Double
 	var alpha: Double
 
-	static let red = Color(red: 1, green: 0, blue: 0, alpha: 1)
-	static let green = Color(red: 0, green: 1, blue: 0, alpha: 1)
-	static let blue = Color(red: 0, green: 0, blue: 1, alpha: 1)
+	public static let red = Color(red: 1, green: 0, blue: 0, alpha: 1)
+	public static let green = Color(red: 0, green: 1, blue: 0, alpha: 1)
+	public  static let blue = Color(red: 0, green: 0, blue: 1, alpha: 1)
 }
 
-enum Font: String {
+public enum Font: String {
 	case sans = "Sans"
 	case arial = "Arial"
 	case courier = "Courier"
-}
-
-public func example(filename: String) throws {
-	
-	let surface = try Surface(
-		filename: filename,
-		size: CGSize(
-			width: 800,
-			height: 600
-		)
-	)
-
-	let context = try Context(surface)
-
-	context.setSource(
-		color: .green
-	)
-
-	context.setFont(
-		size: 100
-	)
-
-	context.moveTo(
-		point: CGPoint(
-			x: 100.0,
-			y: 200.0
-		)
-	)
-
-	context.createText(
-		"Hello World!"
-	)
-
-	context.saveFile(
-		filename
-	)
-
 }
