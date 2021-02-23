@@ -7,3 +7,5 @@
 * v 0.2
 	* created Surface class
 	* created CairoError class
+* v 0.3
+	* created Context, Color class and Font enum 
